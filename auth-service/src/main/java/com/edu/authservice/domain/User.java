@@ -1,29 +1,32 @@
 package com.edu.authservice.domain;
 
 
+import com.edu.authservice.auth.Authorities;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
 
 @Document
 public class User implements UserDetails {
 
     @Id
     private String id;
-    private Collection<? extends GrantedAuthority> authorities;
+    private Set<Authorities> authorities;
     private String password;
+    @Indexed(unique = true)
     private String username;
     private boolean isAccountNonExpired;
     private boolean isAccountNonLocked;
     private boolean isCredentialsNonExpired;
     private boolean isEnabled;
-
+    private boolean isActivated;
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Set<Authorities> getAuthorities() {
         return authorities;
     }
 
@@ -65,7 +68,7 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+    public void setAuthorities(Set<Authorities> authorities) {
         this.authorities = authorities;
     }
 
@@ -91,5 +94,26 @@ public class User implements UserDetails {
 
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
+    }
+
+    public boolean isActivated() {
+        return isActivated;
+    }
+
+    public void setActivated(boolean activated) {
+        isActivated = activated;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
